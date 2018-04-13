@@ -33,7 +33,7 @@ contract Pool {
   }
   */
 
-  function addNewMember(address _ethAddress) onlyPoolMaster {
+  function addNewMember(address _ethAddress) public onlyPoolMaster {
     membersId[membersCount + 1] = Member(1 , _ethAddress);
   }
 
