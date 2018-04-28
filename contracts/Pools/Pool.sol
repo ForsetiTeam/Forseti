@@ -1,6 +1,5 @@
 pragma solidity ^0.4.15;
 
-import "./PoolManageable.sol";
 import "../dependencies/SafeMath.sol";
 
 contract Pool {
