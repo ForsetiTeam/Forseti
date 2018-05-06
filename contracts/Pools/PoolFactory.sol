@@ -8,17 +8,17 @@ contract PoolFactory {
 
   mapping (uint => address) pools;
   uint256 poolsCount;
-  uint256 depositValue;
+  //uint256 depositValue;
   ERC20 forsToken;
 
-  function PoolFactory(address _token, uint256 _depositValue) {
+  function PoolFactory(address _token) {
     forsToken = ERC20(_token);
-    depositValue = _depositValue;
+    //depositValue = _depositValue;
   }
 
   function createPool(address _poolMaster, uint256 _depositStake, string _name) public {
     address newPool = new Pool(_poolMaster, _depositStake, _name);
     pools[poolsCount] = newPool;
-    forsToken.transfer(newPool, depositValue);
+    forsToken.transfer(newPool, _depositStake);
   }
 }

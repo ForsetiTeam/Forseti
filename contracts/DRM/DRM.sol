@@ -9,7 +9,10 @@ contract DRM  {
   address pool;
   bytes32 argumentsHash;
   string result;
+
   bool disputeResolved;
+  bool votesProvided;
+
   uint256 blockForSeed;
   uint arbitratorsNumber;
   mapping (uint256 => address) arbitrators;
@@ -22,6 +25,7 @@ contract DRM  {
     require(msg.sender == Pool(pool).poolMaster());
     _;
   }
+
 
 
   function DRM(address _pool, bytes32 _argumentsHash, address _disputeCreator, uint _arbitratorsNumber) public {
@@ -59,6 +63,11 @@ contract DRM  {
     return result;
   }
 
+/*
+  function checkMessage(bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s) returns (bytes32) {
+
+  }
+*/
   // TO DO service reward
   //function serviceReward() {}
 }
