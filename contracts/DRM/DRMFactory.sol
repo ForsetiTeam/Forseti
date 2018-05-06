@@ -8,8 +8,8 @@ contract DRMFactory {
   mapping (uint256 => address) public IdDisputes;
   uint256 public disputesCounter;
 
-  function createDispute(address _pool, bytes32 _argumentsHash) public {
-    address newDispute = new DRM(_pool, _argumentsHash, msg.sender);
+  function createDispute(address _pool, bytes32 _argumentsHash, uint _arbitratorsNumber) public {
+    address newDispute = new DRM(_pool, _argumentsHash, msg.sender, _arbitratorsNumber);
     disputesCounter +=1;
     activeDisputes[newDispute] = true;
     IdDisputes[disputesCounter] = newDispute;

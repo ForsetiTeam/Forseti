@@ -6,10 +6,10 @@ import "./Pool.sol";
 
 contract PoolFactory {
 
-  mapping (uint => address) pools;
+  mapping (uint => address) public pools;
   uint256 poolsCount;
   //uint256 depositValue;
-  ERC20 forsToken;
+  ERC20 public forsToken;
 
   function PoolFactory(address _token) {
     forsToken = ERC20(_token);
@@ -19,6 +19,6 @@ contract PoolFactory {
   function createPool(address _poolMaster, uint256 _depositStake, string _name) public {
     address newPool = new Pool(_poolMaster, _depositStake, _name);
     pools[poolsCount] = newPool;
-    forsToken.transfer(newPool, _depositStake);
+    forsToken.transferFrom(msg.sender, newPool, _depositStake);
   }
 }

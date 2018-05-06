@@ -6,7 +6,7 @@ var DRMFactory = artifacts.require("./DRM/DRMFactory.sol");
 
 
 
-var wallet = '0x627306090abaB3A6e1400e9345bC60c78a8BEf57';
+var wallet = '0x6B35d857486800768b5878eE2F827D7046a7dd6E';
 
 
 module.exports = function (deployer) {
@@ -14,6 +14,8 @@ module.exports = function (deployer) {
         return deployer.deploy(PoolFactory, Fors.address);
     }).then(function () {
         return deployer.deploy(DRMFactory);
+    }).then(function () {
+        return deployer.deploy(DRM);
     })
 };
 

@@ -49,14 +49,45 @@ contract DRM  {
     disputeResolved = true;
   }
 
-
-  function setArbitratorsAndVotes(address[] _arbitrators) onlyPoolMaster {
+/**
+  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32 _s) onlyPoolMaster {
     for (uint i; i < arbitratorsNumber; i++ ) {
-      arbitrators[i] = _arbitrators[i];
+      arbitrators[i] = validate(_msgHash[i], _v[i], _r[i], _s[i]);
     }
     // TO DO set arbitrators votes with ecrecover
     // need test gasLimit for this function (how much iterations could be in one transaction)
   }
+*/
+  function validate(bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) constant returns (bytes32) {
+    bool ret;
+    address addr;
+    bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+    bytes32 prefixedHash = keccak256(prefix, msgHash);
+
+    assembly {
+      let size := mload(0x40)
+      mstore(size, prefixedHash)
+      mstore(add(size, 32), v)
+      mstore(add(size, 64), r)
+      mstore(add(size, 96), s)
+      ret := call(3000, 1, 0, size, 128, size, 32)
+      addr := mload(size)
+    }
+    return msgHash;
+  }
+
+  function constVerify(bytes32 r, bytes32 s, uint8 v, bytes32 hash) constant returns(address) {
+    return ecrecover(hash, v, r, s);
+  }
+
+  function testRecovery(bytes32 h, uint8 v, bytes32 r, bytes32 s) returns (address) {
+    bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+    bytes32 prefixedHash = sha3(prefix, h);
+    address addr = ecrecover(prefixedHash, v, r, s);
+
+    return addr;
+  }
+
 
   function getResult() public view returns(string) {
     require(disputeResolved);
