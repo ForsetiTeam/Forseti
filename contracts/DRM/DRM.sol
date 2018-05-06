@@ -11,12 +11,13 @@ contract DRM  {
   string result;
 
   bool disputeResolved;
-  bool votesProvided;
+  bool public votesProvided;
 
   uint256 blockForSeed;
   uint arbitratorsNumber;
-  mapping (uint256 => address) arbitrators;
-  mapping (address => bytes32) votes;
+
+  mapping (uint256 => address) public arbitrators;
+  mapping (uint256 => bytes32) public votes;
 
   event DRMcreate(address _diputeCreator, address _dispute);
   event resultCommited(string);
@@ -42,23 +43,23 @@ contract DRM  {
     return block.blockhash(blockForSeed);
   }
 
-
   function setResult(string _result) onlyPoolMaster public {
     result = _result;
     resultCommited(result);
     disputeResolved = true;
   }
 
-/**
-  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32 _s) onlyPoolMaster {
-    for (uint i; i < arbitratorsNumber; i++ ) {
+
+  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s) public returns(bool)  {
+    for (uint i = 0; i < _msgHash.length; i++ ) {
       arbitrators[i] = validate(_msgHash[i], _v[i], _r[i], _s[i]);
+      votes[i] = _msgHash[i];
     }
-    // TO DO set arbitrators votes with ecrecover
-    // need test gasLimit for this function (how much iterations could be in one transaction)
+    votesProvided = true;
+    return true;
   }
-*/
-  function validate(bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) constant returns (bytes32) {
+
+  function validate(bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) view public returns (address) {
     bool ret;
     address addr;
     bytes memory prefix = "\x19Ethereum Signed Message:\n32";
@@ -73,16 +74,12 @@ contract DRM  {
       ret := call(3000, 1, 0, size, 128, size, 32)
       addr := mload(size)
     }
-    return msgHash;
+    return addr;
   }
 
-  function constVerify(bytes32 r, bytes32 s, uint8 v, bytes32 hash) constant returns(address) {
-    return ecrecover(hash, v, r, s);
-  }
-
-  function testRecovery(bytes32 h, uint8 v, bytes32 r, bytes32 s) returns (address) {
+  function testRecovery(bytes32 h, uint8 v, bytes32 r, bytes32 s) pure public returns (address) {
     bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-    bytes32 prefixedHash = sha3(prefix, h);
+    bytes32 prefixedHash = keccak256(prefix, h);
     address addr = ecrecover(prefixedHash, v, r, s);
 
     return addr;
