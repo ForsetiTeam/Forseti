@@ -49,6 +49,7 @@ contract Pool {
     membersId[membersCount + 1] =  pendingMembers[id];
     membersCount += 1;
     delete pendingMembers[id];
+    pendingCount -= 1;
   }
 
   function getMembersReputation(uint256 _id) public view returns(uint256) {
