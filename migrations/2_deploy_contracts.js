@@ -14,8 +14,8 @@ module.exports = function (deployer) {
         return deployer.deploy(PoolFactory, Fors.address);
     }).then(function () {
         return deployer.deploy(DRMFactory);
-    }).then(function () {
+    })/*.then(function () {
         return deployer.deploy(DRM);
-    })
+    })*/
 };
 

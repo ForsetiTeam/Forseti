@@ -5,9 +5,9 @@ import "../Pools/Pool.sol";
 
 contract DRM  {
 
-  address disputeCreator;
-  address pool;
-  bytes32 argumentsHash;
+  address  disputeCreator;
+  address  pool;
+  bytes32  argumentsHash;
   string result;
 
   bool disputeResolved;
@@ -20,14 +20,13 @@ contract DRM  {
   mapping (uint256 => bytes32) public votes;
 
   event DRMcreate(address _diputeCreator, address _dispute);
-  event resultCommited(string);
+  event ResultCommited(string);
+  event VotesProvided();
 
   modifier onlyPoolMaster() {
     require(msg.sender == Pool(pool).poolMaster());
     _;
   }
-
-
 
   function DRM(address _pool, bytes32 _argumentsHash, address _disputeCreator, uint _arbitratorsNumber) public {
     DRMcreate(_disputeCreator, this);
@@ -38,25 +37,30 @@ contract DRM  {
     arbitratorsNumber = _arbitratorsNumber;
   }
 
-
   function getSeed() public view returns(bytes32) {
     return block.blockhash(blockForSeed);
   }
 
   function setResult(string _result) onlyPoolMaster public {
+    require(votesProvided);
     result = _result;
-    resultCommited(result);
+    ResultCommited(result);
     disputeResolved = true;
+
   }
 
-
-  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s) public returns(bool)  {
+  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s) onlyPoolMaster  public returns(bool)  {
     for (uint i = 0; i < _msgHash.length; i++ ) {
       arbitrators[i] = validate(_msgHash[i], _v[i], _r[i], _s[i]);
       votes[i] = _msgHash[i];
     }
     votesProvided = true;
+    VotesProvided();
     return true;
+  }
+
+  function checkSha3(string messsage) public view returns (bytes32) {
+    return keccak256(messsage);
   }
 
   function validate(bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) view public returns (address) {
@@ -78,9 +82,9 @@ contract DRM  {
   }
 
   function testRecovery(bytes32 h, uint8 v, bytes32 r, bytes32 s) pure public returns (address) {
-    bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-    bytes32 prefixedHash = keccak256(prefix, h);
-    address addr = ecrecover(prefixedHash, v, r, s);
+    //bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+    //bytes32 prefixedHash = keccak256(prefix, h);
+    address addr = ecrecover(h, v, r, s);
 
     return addr;
   }
@@ -90,6 +94,8 @@ contract DRM  {
     require(disputeResolved);
     return result;
   }
+
+  // TO DO selfDestruct
 
 /*
   function checkMessage(bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s) returns (bytes32) {

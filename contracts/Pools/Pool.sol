@@ -12,8 +12,8 @@ contract Pool {
   }
 
   struct Member {
-    uint256 reputationPoints;
-    address ethAddress;
+  uint256 reputationPoints;
+  address ethAddress;
   }
 
   address public poolMaster;
@@ -21,10 +21,10 @@ contract Pool {
   uint256 public membersLimit;
   string public name;
 
-  mapping (uint256 => Member) membersId;
-  mapping (uint256 => Member) pendingMembers;
-  uint256 membersCount;
-  uint256 pendingCount;
+  mapping (uint256 => Member) public membersId;
+  mapping (uint256 => Member) public pendingMembers;
+  uint256 public membersCount;
+  uint256 public pendingCount;
   //Member[] pendingMembers;
 
   function Pool(address _poolMaster, uint256 _depositStake, string _name) public {
@@ -40,12 +40,14 @@ contract Pool {
   }
   */
 
-  function addNewMember(address _ethAddress) public onlyPoolMaster {
-    pendingMembers[pendingCount + 1] = Member(1 , _ethAddress);
+  function BecomeNewMember() public  {
+    pendingMembers[pendingCount + 1] = Member(1 , msg.sender);
+    pendingCount += 1;
   }
 
   function confirmNewMember(uint256 id) public onlyPoolMaster {
     membersId[membersCount + 1] =  pendingMembers[id];
+    membersCount += 1;
     delete pendingMembers[id];
   }
 
@@ -58,3 +60,4 @@ contract Pool {
   }
 
 }
+// need check confirmNewMember
