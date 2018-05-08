@@ -5,16 +5,17 @@ import "../Pools/Pool.sol";
 
 contract DRM  {
 
-  address  disputeCreator;
-  address  pool;
-  bytes32  argumentsHash;
-  string result;
+  address  public disputeCreator;
+  address  public pool;
+  bytes32  public argumentsHash;
+  string public result;
 
   bool disputeResolved;
   bool public votesProvided;
 
-  uint256 blockForSeed;
-  uint arbitratorsNumber;
+  uint256 public blockForSeed;
+  uint public arbitratorsNumber;
+  uint256 public budgetForDispute;
 
   mapping (uint256 => address) public arbitrators;
   mapping (uint256 => bytes32) public votes;
@@ -28,7 +29,7 @@ contract DRM  {
     _;
   }
 
-  function DRM(address _pool, bytes32 _argumentsHash, address _disputeCreator, uint _arbitratorsNumber) public {
+  function DRM(address _pool, bytes32 _argumentsHash, address _disputeCreator, uint _arbitratorsNumber) payable public {
     DRMcreate(_disputeCreator, this);
     argumentsHash = _argumentsHash;
     pool = _pool;
@@ -38,6 +39,7 @@ contract DRM  {
   }
 
   function getSeed() public view returns(bytes32) {
+    require(block.number > blockForSeed);
     return block.blockhash(blockForSeed);
   }
 
@@ -70,13 +72,13 @@ contract DRM  {
     bytes32 prefixedHash = keccak256(prefix, msgHash);
 
     assembly {
-      let size := mload(0x40)
-      mstore(size, prefixedHash)
-      mstore(add(size, 32), v)
-      mstore(add(size, 64), r)
-      mstore(add(size, 96), s)
-      ret := call(3000, 1, 0, size, 128, size, 32)
-      addr := mload(size)
+    let size := mload(0x40)
+    mstore(size, prefixedHash)
+    mstore(add(size, 32), v)
+    mstore(add(size, 64), r)
+    mstore(add(size, 96), s)
+    ret := call(3000, 1, 0, size, 128, size, 32)
+    addr := mload(size)
     }
     return addr;
   }
