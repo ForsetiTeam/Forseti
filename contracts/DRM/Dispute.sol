@@ -1,12 +1,20 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../dependencies/Ownable.sol";
 import "../Pools/Pool.sol";
+
+contract DRMInterface {
+
+  function closeDispute() public {
+  }
+
+}
 
 contract Dispute  {
 
   address  public disputeCreator;
   address  public pool;
+  address DRMAddress;
   bytes32  public argumentsHash;
   string public result;
 
@@ -46,6 +54,7 @@ contract Dispute  {
     result = _result;
     ResultCommited(result);
     disputeResolved = true;
+    DRMInterface(DRMAddress).closeDispute();
 
   }
 

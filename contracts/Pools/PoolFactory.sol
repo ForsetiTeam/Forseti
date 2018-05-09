@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../dependencies/ERC20.sol";
 import "../dependencies/Ownable.sol";
@@ -11,15 +11,18 @@ contract PoolFactory {
   //uint256 depositValue;
   ERC20 public forsToken;
 
-  function PoolFactory(address _token) {
+  event NewPoolCreating(address newPool, address newPoolsMaster);
+
+  function PoolFactory(address _token) public {
     forsToken = ERC20(_token);
     //depositValue = _depositValue;
   }
 
-  function createPool(address _poolMaster, uint256 _depositStake, string _name) public {
+  function createPool(uint256 _depositStake, string _name) public {
     // require()
-    address newPool = new Pool(_poolMaster, _depositStake, _name);
+    address newPool = new Pool(msg.sender, _depositStake, _name);
     pools[poolsCount] = newPool;
     forsToken.transferFrom(msg.sender, newPool, _depositStake);
+    NewPoolCreating(newPool, msg.sender);
   }
 }
