@@ -22,9 +22,9 @@ contract Pool {
   string public name;
 
   mapping (uint256 => Member) public membersId;
-  mapping (uint256 => Member) public pendingMembers;
+  //mapping (uint256 => Member) public pendingMembers;
   uint256 public membersCount;
-  uint256 public pendingCount;
+  //uint256 public pendingCount;
   //Member[] pendingMembers;
 
   function Pool(address _poolMaster, uint256 _depositStake, string _name) public {
@@ -34,23 +34,21 @@ contract Pool {
     membersLimit = depositStake.div(1 ether);
   }
 
-  /*
-  function addNewMember(address _ethAddress)  public {
-    pendingMembers.push(Member());
-  }
-  */
-
-  function BecomeNewMember() public  {
-    pendingMembers[pendingCount + 1] = Member(1 , msg.sender);
-    pendingCount += 1;
+  function becomeNewMember() public  {
+    //pendingMembers[pendingCount + 1] = Member(1 , msg.sender);
+    //pendingCount += 1;
+    membersId[membersCount + 1] = Member(1 , msg.sender);
+    membersCount += 1;
   }
 
+  /**
   function confirmNewMember(uint256 id) public onlyPoolMaster {
     membersId[membersCount + 1] =  pendingMembers[id];
     membersCount += 1;
     delete pendingMembers[id];
     pendingCount -= 1;
   }
+  */
 
   function getMembersReputation(uint256 _id) public view returns(uint256) {
     return membersId[_id].reputationPoints;
@@ -59,6 +57,7 @@ contract Pool {
   function getMembersAddress(uint256 _id) public view returns(address) {
     return membersId[_id].ethAddress;
   }
+
 
 }
 // need check confirmNewMember

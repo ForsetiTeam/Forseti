@@ -2,6 +2,7 @@ pragma solidity ^0.4.18;
 
 import "../dependencies/Ownable.sol";
 import "../Pools/Pool.sol";
+import "../dependencies/SafeMath.sol";
 
 contract DRMInterface {
 
@@ -11,6 +12,7 @@ contract DRMInterface {
 }
 
 contract Dispute  {
+  using SafeMath for uint;
 
   address  public disputeCreator;
   address  public pool;
@@ -26,6 +28,7 @@ contract Dispute  {
   uint256 public budgetForDispute;
 
   mapping (uint256 => address) public arbitrators;
+  mapping (address => bool) private arbitratorsReward;
   mapping (uint256 => bytes32) public votes;
 
   event ResultCommited(string);
@@ -50,12 +53,18 @@ contract Dispute  {
   }
 
   function setResult(string _result) onlyPoolMaster public {
-    require(votesProvided);
+    require(votesProvided && !disputeResolved);
     result = _result;
     ResultCommited(result);
     disputeResolved = true;
     DRMInterface(DRMAddress).closeDispute();
+    msg.sender.transfer(budgetForDispute.div(arbitratorsNumber + 1));
+  }
 
+  function getProfit() {
+    require(arbitratorsReward[msg.sender]);
+    arbitratorsReward[msg.sender] = false;
+    msg.sender.transfer(budgetForDispute.div(arbitratorsNumber + 1));
   }
 
   function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s) onlyPoolMaster  public returns(bool)  {
