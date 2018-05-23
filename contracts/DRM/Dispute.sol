@@ -52,7 +52,7 @@ contract Dispute  {
     return block.blockhash(blockForSeed);
   }
 
-  function setResult(string _result) onlyPoolMaster public {
+  function setResult(string _result) internal {
     require(votesProvided && !disputeResolved);
     result = _result;
     ResultCommited(result);
@@ -67,13 +67,14 @@ contract Dispute  {
     msg.sender.transfer(budgetForDispute.div(arbitratorsNumber + 1));
   }
 
-  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s) onlyPoolMaster  public returns(bool)  {
+  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s, string _result) onlyPoolMaster  public returns(bool)  {
     for (uint i = 0; i < _msgHash.length; i++ ) {
       arbitrators[i] = validate(_msgHash[i], _v[i], _r[i], _s[i]);
       votes[i] = _msgHash[i];
     }
     votesProvided = true;
     VotesProvided();
+    setResult(_result);
     return true;
   }
 
@@ -103,7 +104,6 @@ contract Dispute  {
     //bytes memory prefix = "\x19Ethereum Signed Message:\n32";
     //bytes32 prefixedHash = keccak256(prefix, h);
     address addr = ecrecover(h, v, r, s);
-
     return addr;
   }
 
