@@ -24,6 +24,7 @@ contract PoolFactory {
   function createPool(uint256 _depositStake, string _name) public {
     // require()
     address newPool = new Pool(msg.sender, _depositStake, _name);
+    poolsCount += 1;
     pools[poolsCount] = newPool;
     forsToken.transferFrom(msg.sender, newPool, _depositStake);
     NewPoolCreating(newPool, msg.sender);

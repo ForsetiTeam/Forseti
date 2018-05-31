@@ -21,7 +21,8 @@ contract Pool {
   uint256 public membersLimit;
   string public name;
 
-  mapping (uint256 => Member) public membersId;
+  mapping (uint256 => Member) public membersById;
+  mapping (address => uint256) public membersByAddress;
   //mapping (uint256 => Member) public pendingMembers;
   uint256 public membersCount;
   //uint256 public pendingCount;
@@ -37,8 +38,16 @@ contract Pool {
   function becomeNewMember() public  {
     //pendingMembers[pendingCount + 1] = Member(1 , msg.sender);
     //pendingCount += 1;
-    membersId[membersCount + 1] = Member(1 , msg.sender);
     membersCount += 1;
+    membersById[membersCount] = Member(1 , msg.sender);
+    membersByAddress[msg.sender] = membersCount;
+  }
+
+  function leavePool() public {
+    uint256 idToDelete;
+    idToDelete = membersByAddress[msg.sender];
+    delete membersByAddress[msg.sender];
+    delete membersById[idToDelete];
   }
 
   /**
@@ -51,11 +60,11 @@ contract Pool {
   */
 
   function getMembersReputation(uint256 _id) public view returns(uint256) {
-    return membersId[_id].reputationPoints;
+    return membersById[_id].reputationPoints;
   }
 
   function getMembersAddress(uint256 _id) public view returns(address) {
-    return membersId[_id].ethAddress;
+    return membersById[_id].ethAddress;
   }
 
 

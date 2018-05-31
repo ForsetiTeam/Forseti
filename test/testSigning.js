@@ -1,15 +1,15 @@
-var DRM = artifacts.require('DRM')
+var Dispute = artifacts.require('Dispute')
 
 
-contract('DRM', (accounts) => {
+contract('Dispute', (accounts) => {
     var address = accounts[0]
     var address1 = accounts[1]
 
     it('ecrecover result matches address', async function() {
-        var instance = await DRM.deployed()
+        var instance = await Dispute.deployed()
         var msg = 'hello'
         var h = web3.sha3(msg)
-        console.log(h)
+        //console.log(h)
         var sig = web3.eth.sign(address, h).slice(2)
         var r = `0x${sig.slice(0, 64)}`
         var s = `0x${sig.slice(64, 128)}`
@@ -17,12 +17,12 @@ contract('DRM', (accounts) => {
 
         var result = await instance.testRecovery.call(h, v, r, s)
         var result2 = await instance.validate.call(h, v, r, s)
-        console.log(result)
-        console.log(result2)
+        //console.log(result)
+        //console.log(result2)
     })
 
     it('votes', async function() {
-        var instance = await DRM.deployed()
+        var instance = await Dispute.deployed()
         var msg = ['1','2']
         var h = [web3.sha3(msg[0]),web3.sha3(msg[1])]
         var sig = [web3.eth.sign(address, h[0]).slice(2), web3.eth.sign(address1, h[1]).slice(2)]
@@ -33,7 +33,7 @@ contract('DRM', (accounts) => {
         console.log(v)
         console.log(r)
         console.log(s)
-        await instance.setArbitratorsAndVotes.call(h, v, r, s)
+        await instance.setArbitratorsAndVotes.call(h, v, r, s, "test")
         //console.log(result)
         //let vote2 = await instance.votes.call(1);
         //console.log(vote2)

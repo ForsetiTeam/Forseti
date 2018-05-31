@@ -52,7 +52,7 @@ contract Dispute  {
     return block.blockhash(blockForSeed);
   }
 
-  function setResult(string _result) internal {
+  function setResult(string _result) public onlyPoolMaster {
     require(votesProvided && !disputeResolved);
     result = _result;
     ResultCommited(result);
@@ -67,7 +67,7 @@ contract Dispute  {
     msg.sender.transfer(budgetForDispute.div(arbitratorsNumber + 1));
   }
 
-  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s, string _result) onlyPoolMaster  public returns(bool)  {
+  function setArbitratorsAndVotes(bytes32[] _msgHash, uint8[] _v, bytes32[] _r, bytes32[] _s, string _result)   public returns(bool)  {
     for (uint i = 0; i < _msgHash.length; i++ ) {
       arbitrators[i] = validate(_msgHash[i], _v[i], _r[i], _s[i]);
       votes[i] = _msgHash[i];
