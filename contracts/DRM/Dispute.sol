@@ -46,6 +46,7 @@ contract Dispute  {
     blockForSeed = block.number + 1;
     arbitratorsNumber = _arbitratorsNumber;
     DRMAddress = msg.sender;
+    budgetForDispute = msg.value;
   }
 
   function getSeed() public view returns(bytes32) {
