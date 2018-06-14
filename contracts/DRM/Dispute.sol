@@ -45,6 +45,7 @@ contract Dispute  {
     disputeCreator = _disputeCreator;
     blockForSeed = block.number + 1;
     arbitratorsNumber = _arbitratorsNumber;
+    DRMAddress = msg.sender;
   }
 
   function getSeed() public view returns(bytes32) {
